@@ -409,8 +409,8 @@ class TranslationCoordinator(
     bytes: ByteArray,
     width: Int,
     height: Int,
-  ): Bitmap? =
-    try {
+  ): Bitmap? {
+    return try {
       Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888).apply {
         copyPixelsFromBuffer(ByteBuffer.wrap(bytes))
       }
@@ -418,6 +418,7 @@ class TranslationCoordinator(
       Log.e("TranslationCoordinator", "Failed to decode rendered overlay bitmap", e)
       null
     }
+  }
 
   private companion object {
     const val MIN_OVERLAY_FONT_SIZE_PX: Float = 8.0f

@@ -22,7 +22,22 @@ class TranslationLoggingPrivacyTest {
     val detector = File("src/main/java/dev/davidv/translator/LanguageDetector.kt").readText()
     assertFalse("Detection receives the original private text", detector.contains("Log."))
     val processText = File("src/main/java/dev/davidv/translator/ProcessTextActivity.kt").readText()
-    val response = processText.substringAfter("val replyModalIntent").substringBefore("toTranslate")
-    assertFalse("PROCESS_TEXT responses must not interpolate translated text into diagnostics", response.contains("'\$text'"))
+    val calls = processText.lineSequence().filter { it.contains("Log.") }.toList()
+    calls.forEach { call ->
+      assertFalse("PROCESS_TEXT diagnostics must not interpolate translated text", call.contains("\$text"))
+    }
+  }
+
+  @Test
+  fun `UI diagnostics keep OCR speech and dictionary payloads private`() {
+    val source = File("src/main/java/dev/davidv/translator/ui/TranslatorViewModel.kt").readText()
+    val dispatch = source.substringAfter("fun handleMessage(").substringBefore("when (message)")
+    assertTrue("Dispatch logs only the event type", dispatch.contains("message.javaClass.simpleName"))
+    assertFalse("Event toString can contain extracted text or spoken output", dispatch.contains("\$message\""))
+    val lookup = source.substringAfter("private fun handleDictionaryLookup(").substringBefore("private fun handleFileEvent(")
+    lookup.lineSequence().filter { it.contains("Log.") }.forEach { call ->
+      assertFalse("Dictionary diagnostics must not expose the requested word", call.contains("\$str"))
+      assertFalse("Dictionary diagnostics must not expose the result", call.contains("\$foundWord"))
+    }
   }
 }

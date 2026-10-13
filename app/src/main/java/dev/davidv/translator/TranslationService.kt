@@ -207,7 +207,7 @@ class TranslationService(
         japaneseSpaced = settings.addSpacesForJapaneseTransliteration,
       )
     } catch (e: Exception) {
-      Log.w("TranslationService", "Failed to transliterate text for $from", e)
+      Log.w("TranslationService", "Text transliteration failed")
       null
     }
   }
