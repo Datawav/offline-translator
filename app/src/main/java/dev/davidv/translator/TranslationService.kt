@@ -56,7 +56,7 @@ class TranslationService(
       try {
         catalog.translateHtmlFragments(from, to, fragments)
       } catch (e: CatalogException) {
-        Log.w("TranslationService", "translateHtmlFragments failed", e)
+        Log.w("TranslationService", "translateHtmlFragments failed")
         fragments
       }
     }
@@ -139,7 +139,7 @@ class TranslationService(
         } catch (e: CatalogException.MissingAsset) {
           return@withContext TranslationResult.Error("Language pair ${from.code} -> ${to.code} not installed")
         } catch (e: CatalogException.Other) {
-          Log.e("TranslationService", "Steer failed", e)
+          Log.e("TranslationService", "Steer failed")
           return@withContext TranslationResult.Error("Steer failed: ${e.message}")
         }
       val result = steered.translatedText
@@ -187,7 +187,7 @@ class TranslationService(
         // User-initiated cancel — not an error, no stack trace logged.
         Result.failure(kotlinx.coroutines.CancellationException("translation cancelled"))
       } catch (e: CatalogException.Other) {
-        Log.e("TranslationService", "Document translation failed", e)
+        Log.e("TranslationService", "Document translation failed")
         Result.failure(IllegalStateException("Document translation failed: ${e.message}", e))
       }
     }

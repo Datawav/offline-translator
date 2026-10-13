@@ -29,11 +29,23 @@ class TranslationLoggingPrivacyTest {
   }
 
   @Test
+  fun `translation and transliteration failures log only literal events`() {
+    val source = File("src/main/java/dev/davidv/translator/TranslationService.kt").readText()
+    val calls = source.lineSequence().filter { it.contains("Log.") }.toList()
+    val literalEvent = Regex("""\s*Log\.[vdiew]\("TranslationService", "[^"$]*"\)\s*""")
+    assertTrue(calls.isNotEmpty())
+    calls.forEach { call ->
+      assertTrue("Native exception payloads can contain private text", literalEvent.matches(call))
+    }
+  }
+
+  @Test
   fun `UI diagnostics keep OCR speech and dictionary payloads private`() {
     val source = File("src/main/java/dev/davidv/translator/ui/TranslatorViewModel.kt").readText()
     val dispatch = source.substringAfter("fun handleMessage(").substringBefore("when (message)")
     assertTrue("Dispatch logs only the event type", dispatch.contains("message.javaClass.simpleName"))
     assertFalse("Event toString can contain extracted text or spoken output", dispatch.contains("\$message\""))
+    assertFalse("Steering failures may carry a native payload", source.contains("Log.e(\"Steer\", r.message)"))
     val lookup = source.substringAfter("private fun handleDictionaryLookup(").substringBefore("private fun handleFileEvent(")
     lookup.lineSequence().filter { it.contains("Log.") }.forEach { call ->
       assertFalse("Dictionary diagnostics must not expose the requested word", call.contains("\$str"))

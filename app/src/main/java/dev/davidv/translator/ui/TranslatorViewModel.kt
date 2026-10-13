@@ -527,7 +527,7 @@ class TranslatorViewModel(
         viewModelScope.launch {
           when (val r = translationCoordinator.steer(fromLang, toLang, src, message.forcedPrefix)) {
             is TranslationResult.Success -> _output.value = r.result
-            is TranslationResult.Error -> Log.e("Steer", r.message)
+            is TranslationResult.Error -> Log.e("Steer", "Translation steering failed")
           }
         }
       }
@@ -1007,7 +1007,7 @@ class TranslatorViewModel(
         viewModelScope.launch {
           _uiEvents.emit(UiEvent.ShowToast(event.message))
         }
-        Log.w("TranslatorViewModel", "Error event: ${event.message}")
+        Log.w("TranslatorViewModel", "File operation failed")
       }
     }
   }
