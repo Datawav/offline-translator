@@ -102,7 +102,7 @@ class TranslationService(
         } catch (e: CatalogException.MissingAsset) {
           return@withContext TranslationResult.Error("Language pair ${from.code} -> ${to.code} not installed")
         } catch (e: CatalogException.Other) {
-          Log.e("TranslationService", "Translation failed", e)
+          Log.e("TranslationService", "Translation failed")
           return@withContext TranslationResult.Error("Translation failed: ${e.message}")
         }
       val result = withAlternatives.translatedText

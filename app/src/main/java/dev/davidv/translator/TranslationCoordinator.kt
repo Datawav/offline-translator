@@ -69,7 +69,7 @@ class TranslationCoordinator(
         measureTimeMillis {
           result = translationService.translate(from, to, text)
         }
-      Log.d("TranslationCoordinator", "Translating ${text.length} chars from ${from.displayName} to ${to.displayName} took ${elapsed}ms")
+      Log.d("TranslationCoordinator", "Translation took ${elapsed}ms")
     } finally {
       lastTranslatedInput = text
       _isTranslating.value = false
@@ -409,8 +409,8 @@ class TranslationCoordinator(
     bytes: ByteArray,
     width: Int,
     height: Int,
-  ): Bitmap? {
-    return try {
+  ): Bitmap? =
+    try {
       Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888).apply {
         copyPixelsFromBuffer(ByteBuffer.wrap(bytes))
       }
@@ -418,7 +418,6 @@ class TranslationCoordinator(
       Log.e("TranslationCoordinator", "Failed to decode rendered overlay bitmap", e)
       null
     }
-  }
 
   private companion object {
     const val MIN_OVERLAY_FONT_SIZE_PX: Float = 8.0f
